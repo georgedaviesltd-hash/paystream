@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.paymentService.replicaCount }}
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      containers:
+        - name: payment-service
+          image: "{{ .Values.paymentService.image.repository }}:{{ .Values.paymentService.image.tag }}"
+          imagePullPolicy: {{ .Values.paymentService.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.paymentService.service.port }}
+          env:
+            - name: NOTIFICATION_SERVICE_URL
+              value: "http://notification-service:{{ .Values.notificationService.service.port }}"

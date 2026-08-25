@@ -1,0 +1,45 @@
+name: PayStream Continuous Deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and Push Microservices to AWS
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          # Build and push Frontend
+          docker build -t $REGISTRY/paystream-frontend:latest ./frontend/frontend || docker build -t $REGISTRY/paystream-frontend:latest ./frontend
+          docker push $REGISTRY/paystream-frontend:latest
+          
+          # Build and push Payment Service
+          docker build -t $REGISTRY/paystream-payment-service:latest ./payment-service/payment-service || docker build -t $REGISTRY/paystream-payment-service:latest ./payment-service
+          docker push $REGISTRY/paystream-payment-service:latest
+
+      - name: Update EKS Cluster Deployment Kubeconfig
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name paystream-eks-cluster
+
+      - name: Upgrade Live Infrastructure via Helm Chart
+        run: |
+          helm upgrade --install paystream ./helm/paystream \
+            --namespace paystream \
+            --create-namespace

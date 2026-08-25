@@ -1,0 +1,34 @@
+global:
+  environment: production
+
+namespace: paystream
+
+frontend:
+  replicaCount: 2
+  image:
+    repository: paystream-frontend
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 80
+
+paymentService:
+  replicaCount: 2
+  image:
+    repository: paystream-payment-service
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8000
+
+notificationService:
+  replicaCount: 2
+  image:
+    repository: paystream-notification-service
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 3001
