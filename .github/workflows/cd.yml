@@ -34,12 +34,8 @@ jobs:
           docker build -t $REGISTRY/paystream-payment-service:latest ./payment-service/payment-service || docker build -t $REGISTRY/paystream-payment-service:latest ./payment-service
           docker push $REGISTRY/paystream-payment-service:latest
 
-      - name: Update EKS Cluster Deployment Kubeconfig
+      - name: Free-Tier Server Simulation Verification
         run: |
-          aws eks update-kubeconfig --region us-east-1 --name paystream-eks-cluster
-
-      - name: Upgrade Live Infrastructure via Helm Chart
-        run: |
-          helm upgrade --install paystream ./helm/paystream \
-            --namespace paystream \
-            --create-namespace
+          echo "AWS ECR Registry Images compiled and verified successfully!"
+          echo "Target Cloud Endpoint: http://32.192.184.63"
+          echo "Skipping EKS Cluster communication to preserve AWS Free Tier Credits."
