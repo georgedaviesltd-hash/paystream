@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetches full git commit history layers
 
       - name: Set up Python Environment
         uses: actions/setup-python@v5
@@ -26,8 +28,7 @@ jobs:
       - name: Scan Code for Secrets (TruffleHog)
         uses: trufflesecurity/trufflehog@main
         with:
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
+          base: "" # FIX: Forces a complete scan of all workspace assets instead of comparing changes
 
       - name: Vulnerability Static Scanning (Trivy)
         uses: aquasecurity/trivy-action@master

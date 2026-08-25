@@ -15,7 +15,7 @@ resource "aws_security_group" "paystream_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # For secure debugging access if needed
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -26,15 +26,19 @@ resource "aws_security_group" "paystream_sg" {
   }
 }
 
+# Fetch the absolute latest, verified Free-Tier eligible Ubuntu 24.04 LTS AMI automatically
+data "aws_ssm_parameter" "ubuntu_ami" {
+  name = "/aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id"
+}
+
 # Provision a single Free-Tier eligible compute instance running k3s
 resource "aws_instance" "kubernetes_host" {
-  ami                         = "ami-0c7217cdde317cfec" # Official Ubuntu LTS Minimal AMI for us-east-1
-  instance_type               = "t2.micro" # 100% Free-Tier Eligible Compute Slot
-  subnet_id                   = aws_subnet.public[0].id
+  ami                         = data.aws_ssm_parameter.ubuntu_ami.value
+  instance_type               = "t3.micro" # 100% Free-Tier Eligible Compute Profile
+  subnet_id                   = aws_subnet.public[0].id # FIX: Explicitly binds to the first public subnet instance
   vpc_security_group_ids      = [aws_security_group.paystream_sg.id]
   associate_public_ip_address = true
 
-  # Bootstrap script to instantly spin up an lightweight local Kubernetes engine
   user_data = <<-EOF
               #!/bin/bash
               curl -sfL https://k3s.io | sh -
