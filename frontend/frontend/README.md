@@ -1,16 +1,29 @@
-# React + Vite
+# 💳 PayStream — Modern Frontend Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This directory houses the interactive real-time banking and clearing-house monitoring dashboard engine for the PayStream microservice platform.
 
-Currently, two official plugins are available:
+## 🚀 Technical Framework Stack
+*   **Base Compiler Engine**: React 18 (Structured via Vite 5)
+*   **Style Pipeline Layout**: Tailwind CSS v3
+*   **Vector Icon Assets**: Lucide React Framework
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ⚙️ Local Sandbox Engineering Tasks
+To launch and test changes across the client components on your local station:
 
-## React Compiler
+```bash
+# 1. Access the working directory
+cd frontend/frontend
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+# 2. Extract application asset dependencies
+npm install
 
-## Expanding the ESLint configuration
+# 3. Fire up the local Vite hot-reloading development pipeline
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The web panel interface will automatically mount on your system loop at: `http://localhost:5173`.
+
+## 🐳 Production Containerization Engine
+The application compiles into an isolated, hardened image leveraging a two-tiered multi-stage deployment model to drastically shrink artifact size and block security vulnerabilities:
+1.  **Stage 1 (Node Build)**: Transpiles and packages raw source files into static HTML/JS bundles.
+2.  **Stage 2 (Nginx Server Core)**: Injects the distribution static files into a production-grade Nginx server configuration, handling internal proxy forwarding blocks on port `80`.

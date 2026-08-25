@@ -1,0 +1,15 @@
+# Ignore local Terraform cache folders
+.terraform/
+*.terraform*
+
+# Ignore local system state files
+*.tfstate
+*.tfstate.*
+
+# Ignore application local environment secrets
+.env
+.env.local
+.venv/
+__pycache__/
+node_modules/
+dist/
