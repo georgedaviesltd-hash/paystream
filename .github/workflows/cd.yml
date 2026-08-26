@@ -37,5 +37,5 @@ jobs:
       - name: Free-Tier Server Simulation Verification
         run: |
           echo "AWS ECR Registry Images compiled and verified successfully!"
-          echo "Target Cloud Endpoint: http://34.201.4.10"
+          echo "Target Cloud Endpoint: http://44.201.2.66"
           echo "Deploying applications directly to production host node..."
