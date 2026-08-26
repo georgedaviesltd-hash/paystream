@@ -34,8 +34,8 @@ data "aws_ssm_parameter" "ubuntu_ami" {
 # Provision a single Free-Tier eligible compute instance running k3s
 resource "aws_instance" "kubernetes_host" {
   ami                         = data.aws_ssm_parameter.ubuntu_ami.value
-  instance_type               = "t3.micro" # 100% Free-Tier Eligible Compute Profile
-  subnet_id                   = aws_subnet.public[0].id # FIX: Explicitly binds to the first public subnet instance
+  instance_type               = "t3.micro" 
+  subnet_id                   = aws_subnet.public.id # FIX: Removed the [0] brackets since it is a single subnet resource
   vpc_security_group_ids      = [aws_security_group.paystream_sg.id]
   associate_public_ip_address = true
 
