@@ -16,19 +16,15 @@ resource "aws_subnet" "public" {
   cidr_block              = "10.0.1.0/24"
   availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = true
-  tags = {
-    Name = "paystream-public-subnet"
-  }
+  tags                    = { Name = "paystream-public-subnet" }
 }
 
-# 3. Secure Backstage Staff Subnet
+# 3. Secure Private Subnet
 resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.2.0/24"
-  availability_zone = data.aws_availability_zones.available.names[1]
-  tags = {
-    Name = "paystream-private-subnet"
-  }
+  availability_zone = data.aws_availability_zones.available.names[0]
+  tags              = { Name = "paystream-private-subnet" }
 }
 
 # 4. The Cloud Doorway (Internet Gateway)
@@ -37,18 +33,20 @@ resource "aws_internet_gateway" "gw" {
   tags   = { Name = "paystream-igw" }
 }
 
-# 5. Public Route Map Map - Connects our Doorway to the World
-resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.main.id
+# 5. FIX: Forcefully update the VPC's Main Route Table to allow internet egress routing
+resource "aws_default_route_table" "main" {
+  default_route_table_id = aws_vpc.main.default_route_table_id
+
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.gw.id
   }
-  tags = { Name = "paystream-public-rt" }
+
+  tags = { Name = "paystream-main-rt" }
 }
 
-# 6. Critical Link - Binds our public subnet to the internet gateway route table
+# 6. Explicit Link association
 resource "aws_route_table_association" "public" {
   subnet_id      = aws_subnet.public.id
-  route_table_id = aws_route_table.public.id
+  route_table_id = aws_default_route_table.main.id
 }
